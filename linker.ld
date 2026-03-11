@@ -1,7 +1,10 @@
 ENTRY(kernel_main)
 SECTIONS {
     . = 1M;
-    .text : { *(.text) }
+    .text : {
+        KEEP(*(.multiboot)) 
+        *(.text)
+    }
     .data : { *(.data) }
     .bss  : { *(.bss)  }
 }

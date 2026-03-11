@@ -13,13 +13,12 @@ const struct {
     MULTIBOOT_CHECKSUM
 };
 
-// Your red text logic goes here...
-void kernel_main() {
+extern "C" void kernel_main() {
     char* video_memory = (char*)0xb8000;
-    const char* msg = "KiddoZ OS: Terminal Husk Active";
+    const char* msg = "KiddoZ OS running!";
     for(int i = 0; msg[i] != '\0'; i++) {
         video_memory[i*2] = msg[i];
-        video_memory[i*2+1] = 0x04; // Red color
+        video_memory[i*2+1] = 0x04; 
     }
     while(1);
 }

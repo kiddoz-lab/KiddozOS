@@ -1,6 +1,6 @@
 #define MULTIBOOT_MAGIC 0x1BADB002
 #define MULTIBOOT_FLAGS 0x00
-#define MULTIBOOT_CHECKSUM -(MULTIBOOT_MAGIC + MULTIBOOT_FLAGS)
+#define MULTIBOOT_CHECKSUM (unsigned int)-(MULTIBOOT_MAGIC + MULTIBOOT_FLAGS)
 
 __attribute__((section(".multiboot")))
 const struct {

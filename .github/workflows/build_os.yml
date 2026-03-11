@@ -12,7 +12,7 @@ jobs:
 
       - name: Compile and Package KiddozOS
         run: |
-          # 1. Compile and Link (added -fno-leading-underscore for safety)
+          # 1. Compile and Link
           g++ -m32 -ffreestanding -fno-exceptions -fno-rtti -c kernel.cpp -o kernel.o
           ld -m elf_i386 -T linker.ld kernel.o -o kernel.bin
           
@@ -28,5 +28,15 @@ jobs:
           echo '  boot' >> iso/boot/grub/grub.cfg
           echo '}' >> iso/boot/grub/grub.cfg
           
-          # 4. Generate the ISO (mformat error fix)
+          # 4. Generate the ISO
           grub-mkrescue -o kiddoz.iso iso
+          
+          # 5. Check if it actually exists (This will show in your logs!)
+          ls -lh kiddoz.iso
+
+      - name: Upload KiddoZ ISO file
+        uses: actions/upload-artifact@v4
+        with:
+          name: KiddoZ-OS-Package
+          path: kiddoz.iso  
+          if-no-files-found: error 

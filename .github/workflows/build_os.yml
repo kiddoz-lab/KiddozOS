@@ -34,6 +34,14 @@ jobs:
           # 5. Check if it actually exists (This will show in your logs!)
           ls -lh kiddoz.iso
 
+      - name: Commit and Push ISO
+        run: |
+          git config --global user.name "KiddoZ-Bot"
+          git config --global user.email "bot@kiddoz.lab"
+          git add kiddoz.iso
+          git commit -m "New KiddozOS Version!"
+          git push
+
       - name: Upload KiddoZ ISO file
         uses: actions/upload-artifact@v4
         with:

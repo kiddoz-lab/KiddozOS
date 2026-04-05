@@ -14,8 +14,9 @@ jobs:
 
       - name: Compile and Package KiddozOS
         run: |
+          as --32 src/boot.s -o boot.o
           g++ -m32 -ffreestanding -fno-exceptions -fno-rtti -c src/kernel.cpp -o kernel.o
-          ld -m elf_i386 -T linker.ld kernel.o -o kernel.bin
+          ld -m elf_i386 -T linker.ld boot.o kernel.o -o kernel.bin
           mkdir -p iso/boot/grub
           cp kernel.bin iso/boot/
           echo 'set timeout=0' > iso/boot/grub/grub.cfg
@@ -25,7 +26,7 @@ jobs:
           echo '  boot' >> iso/boot/grub/grub.cfg
           echo '}' >> iso/boot/grub/grub.cfg
           grub-mkrescue -o kiddoz.iso iso
-
+      
       - name: Upload KiddoZ ISO file
         uses: actions/upload-artifact@v4
         with:

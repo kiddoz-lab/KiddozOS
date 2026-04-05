@@ -10,28 +10,34 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Install Tooling
-        run: sudo apt-get install -y g++ xorriso grub-pc-bin mtools libisoburn-dev
+        run: sudo apt-get install -y g++ xorriso grub-pc-bin mtools libisoburn-dev xxd
 
       - name: Compile and Package KiddozOS
         run: |
           as --32 src/boot.s -o boot.o
+
+          mkdir -p iso/boot/grub
           
-          for file in $(cat files.txt); do
+
+          cat src/root/* > iso/boot/root.img
+
+          for file in src/*.cpp; do
             filename=$(basename "$file" .cpp)
-            g++ -m32 -ffreestanding -fno-exceptions -fno-rtti -c "$file" -o "$filename.o"
-            objs="$objs $filename.o"
+            g++ -m32 -ffreestanding -fno-stack-protector -fno-exceptions -fno-rtti -c "$file" -o "$filename.o"
           done
           
-          ld -m elf_i386 -T linker.ld boot.o $objs -o kernel.bin
+          ld -m elf_i386 -T linker.ld boot.o *.o -o kernel.bin
           
-          mkdir -p iso/boot/grub
           cp kernel.bin iso/boot/
+          
           echo 'set timeout=0' > iso/boot/grub/grub.cfg
           echo 'set default=0' >> iso/boot/grub/grub.cfg
           echo 'menuentry "KiddoZ OS" {' >> iso/boot/grub/grub.cfg
           echo '  multiboot /boot/kernel.bin' >> iso/boot/grub/grub.cfg
+          echo '  module /boot/root.img' >> iso/boot/grub/grub.cfg
           echo '  boot' >> iso/boot/grub/grub.cfg
           echo '}' >> iso/boot/grub/grub.cfg
+          
           grub-mkrescue -o kiddoz.iso iso
 
       - name: Upload KiddoZ ISO file

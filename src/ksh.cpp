@@ -9,10 +9,10 @@ extern "C" {
 
         clear_screen();
         
-        if (mod_start == 0) {
-            print_string("Warning: No External List found in ISO.\n");
+        if (mod_start != 0) {
+            print_string("KSH Terminal - prompt module loaded.\n");
         } else {
-            print_string("KSH terminal prompt\n");
+            print_string("Warning: No External Module found.\n");
         }
         
         print_string("Type 'help' for commands.\n\n");
@@ -23,6 +23,7 @@ extern "C" {
             
             while (1) {
                 char c = get_input_char();
+                if (c == 0) continue;
                 
                 if (c == '\n') {
                     cmd[idx] = '\0';
@@ -33,39 +34,49 @@ extern "C" {
                         idx--;
                         print_string("\b");
                     }
-                } else if (idx < 63) {
-                    cmd[idx++] = c;
-                    char out[2] = {c, '\0'};
-                    print_string(out);
+                } else {
+                    if (idx < 63) {
+                        cmd[idx++] = c;
+                        char out[2] = {c, '\0'};
+                        print_string(out);
+                    }
                 }
             }
 
-            if (cmd[0] == 'c' && cmd[1] == 'l' && cmd[2] == 'e' && cmd[3] == 'a' && cmd[4] == 'r' && cmd[5] == '\0') {
-                clear_screen();
-            } else if (cmd[0] == 'l' && cmd[1] == 's' && cmd[2] == '\0') {
+            if (cmd[0] == 'l' && cmd[1] == 's' && cmd[2] == '\0') {
                 if (mod_start != 0) {
-                    char* fs_ptr = (char*)mod_start;
-                    print_string(fs_ptr);
+                    print_string("[L] bin\n[L] sys\nkernel.bin\n");
+                    print_string((char*)mod_start);
                     print_string("\n");
                 } else {
                     print_string("Empty List.\n");
                 }
             } else if (cmd[0] == 'c' && cmd[1] == 'l' && cmd[2] == ' ') {
-                print_string("Shifting focus to: ");
+                print_string("Shifting focus to List: ");
                 print_string(&cmd[3]);
                 print_string("\n");
             } else if (cmd[0] == '~' && cmd[1] == ' ') {
-                print_string("Opening module stream: ");
+                print_string("Opening file stream: ");
                 print_string(&cmd[2]);
-                print_string("\n[READING FROM MEMORY...]\n");
-            } else if (cmd[0] == 'h' && cmd[1] == 'e' && cmd[2] == 'l' && cmd[3] == 'p' && cmd[4] == '\0') {
+                print_string("\n---\n");
+                if (mod_start != 0) {
+                    print_string((char*)mod_start);
+                } else {
+                    print_string("No data in module.");
+                }
+                print_string("\n---\n");
+            } else if (cmd[0] == 'c' && cmd[1] == 'l' && cmd[2] == 'e' && cmd[3] == 'a' && cmd[4] == 'r') {
+                clear_screen();
+            } else if (cmd[0] == 'h' && cmd[1] == 'e' && cmd[2] == 'l' && cmd[3] == 'p') {
                 print_string("KSH COMMANDS:\n");
-                print_string("ls    - List content of list\n");
-                print_string("cl    - Change current List context\n");
-                print_string("clear - Refresh display\n");
-                print_string("~     - Opens a file \n");
+                print_string("ls    - View current List\n");
+                print_string("cl    - Change to a different List\n");
+                print_string("clear - Wipe the screen\n");
+                print_string("~     - Open file data\n");
             } else if (idx > 0) {
-                print_string("Error: Command not recognized.\n");
+                print_string("Error: Command '");
+                print_string(cmd);
+                print_string("' not found.\n");
             }
         }
     }

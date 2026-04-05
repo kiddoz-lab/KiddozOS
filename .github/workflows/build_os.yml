@@ -18,15 +18,18 @@ jobs:
 
           mkdir -p iso/boot/grub
           
-
-          cat src/root/* > iso/boot/root.img
+          if [ -d "src/root" ]; then
+            cat src/root/* > iso/boot/root.img
+          else
+            echo "Empty FS" > iso/boot/root.img
+          fi
 
           for file in src/*.cpp; do
             filename=$(basename "$file" .cpp)
             g++ -m32 -ffreestanding -fno-stack-protector -fno-exceptions -fno-rtti -c "$file" -o "$filename.o"
           done
           
-          ld -m elf_i386 -T linker.ld boot.o *.o -o kernel.bin
+          ld -m elf_i386 -e start -z noexecstack boot.o *.o -o kernel.bin
           
           cp kernel.bin iso/boot/
           

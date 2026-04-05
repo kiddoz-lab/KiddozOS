@@ -25,7 +25,7 @@ jobs:
       - name: Commit and Push ISO
         run: |
           git config --global user.name "KiddoZ-Bot"
-          git config --global user.email "bot@kiddoz.lab"
+          git config --global user.email "kiddoz.xperiments@gmail.com"
           git add kiddoz.iso
           git commit -m "Added KiddozOS V${{ github.run_number }}!"
           git push

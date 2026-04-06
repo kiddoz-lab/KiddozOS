@@ -27,14 +27,47 @@ jobs:
           arm-none-eabi-objcopy kernel.elf -O binary kernel7.img
           echo "✓ Build successful"
 
+      - name: Create Bootable Image
+        run: |
+          set -e
+          # Install required tools
+          sudo apt-get update && sudo apt-get install -y dosfstools
+          
+
+          dd if=/dev/zero of=kiddoz.img bs=1M count=32
+          
+          # Create FAT32 filesystem on the image
+          mkfs.vfat -F 32 -n KIDDOZ kiddoz.img
+          
+
+          mkdir -p /tmp/boot
+          sudo mount kiddoz.img /tmp/boot
+          
+
+          sudo cp kernel7.img /tmp/boot/kernel7.img
+          echo "kernel=kernel7.img" | sudo tee /tmp/boot/config.txt
+          echo "gpu_mem=16" | sudo tee -a /tmp/boot/config.txt
+          echo "disable_overscan=1" | sudo tee -a /tmp/boot/config.txt
+          
+
+          sudo cp -r src/root/* /tmp/boot/ 2>/dev/null || true
+          
+
+          sudo umount /tmp/boot
+          sudo rmdir /tmp/boot
+          
+
+          cp kiddoz.img kiddoz.iso
+          echo "✓ Bootable image created "
+
       - name: Test with QEMU
         run: |
-          timeout 5 qemu-system-arm -M raspi -kernel kernel7.img -serial mon:stdio || true
+          timeout 10 qemu-system-arm -M raspi -sd kiddoz.img -serial mon:stdio || true
           echo "✓ QEMU test completed"
 
       - name: Upload KiddoZ Kernel Image
         uses: actions/upload-artifact@v4
         with:
           name: KiddoZ-Pi-Kernel
-          path: kernel7.img
+          path: kiddoz.img
           if-no-files-found: error

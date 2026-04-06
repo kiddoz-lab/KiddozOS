@@ -21,6 +21,7 @@ jobs:
           arm-none-eabi-objcopy -I binary -O elf32-littlearm -B arm root.img root_blob.o
           
           arm-none-eabi-g++ -marm -mcpu=arm1176jzf-s -ffreestanding -O2 -nostdlib \
+            -fno-exceptions -fno-rtti -nostartfiles \
             src/kernel.cpp src/ksh.cpp boot.o root_blob.o -T linker.ld -o kernel.elf
             
           arm-none-eabi-objcopy kernel.elf -O binary kernel7.img

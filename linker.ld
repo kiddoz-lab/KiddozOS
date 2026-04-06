@@ -4,24 +4,32 @@ SECTIONS
 {
     . = 0x8000;
 
-    .text BLOCK(4K) : ALIGN(4K)
+    .text : ALIGN(4)
     {
-        *(.text)
+        *(.text*)
     }
 
-    .rodata BLOCK(4K) : ALIGN(4K)
+    .rodata : ALIGN(4)
     {
-        *(.rodata)
+        *(.rodata*)
     }
 
-    .data BLOCK(4K) : ALIGN(4K)
+    .data : ALIGN(4)
     {
-        *(.data)
+        *(.data*)
     }
 
-    .bss BLOCK(4K) : ALIGN(4K)
+    .bss : ALIGN(4)
     {
+        *(.bss*)
         *(COMMON)
-        *(.bss)
+    }
+
+    /DISCARD/ :
+    {
+        *(.ARM.exidx*)
+        *(.ARM.extab*)
+        *(.eh_frame*)
+        *(.note.gnu.build-id*)
     }
 }

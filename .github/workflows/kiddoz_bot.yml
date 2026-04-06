@@ -18,7 +18,7 @@ jobs:
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: KiddoZ-OS-Package
+          name: KiddoZ-Pi-Kernel
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
 

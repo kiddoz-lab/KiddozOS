@@ -7,7 +7,7 @@ on:
 
 jobs:
   commit-iso:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: write
@@ -26,6 +26,7 @@ jobs:
         run: |
           git config --global user.name "KiddoZ-Bot"
           git config --global user.email "kiddoz.xperiments@gmail.com"
-          git add kiddoz.iso
+          rm -f kiddoz.iso
+          git add .
           git commit -m "Added KiddozOS V${{ github.run_number }}!"
           git push

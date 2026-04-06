@@ -1,0 +1,17 @@
+# Build artifacts
+*.o
+*.elf
+*.img
+*.iso
+*.bin
+
+# OS/IDE files
+.DS_Store
+.vscode/
+*.swp
+*.swo
+*~
+
+# Build directories
+build/
+dist/

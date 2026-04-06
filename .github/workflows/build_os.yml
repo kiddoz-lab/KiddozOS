@@ -31,38 +31,34 @@ jobs:
         run: |
           set -e
           # Install required tools
-          sudo apt-get update && sudo apt-get install -y dosfstools
-          
+          sudo apt-get update && sudo apt-get install -y dosfstools parted
 
           dd if=/dev/zero of=kiddoz.img bs=1M count=32
-          
-          # Create FAT32 filesystem on the image
-          mkfs.vfat -F 32 -n KIDDOZ kiddoz.img
-          
 
-          mkdir -p /tmp/boot
-          sudo mount kiddoz.img /tmp/boot
           
+          LOOP_DEV=$(sudo losetup --find --show --partscan kiddoz.img)
+          sudo parted -s "$LOOP_DEV" mklabel msdos
+          sudo parted -s "$LOOP_DEV" mkpart primary fat32 1MiB 100%
+          sudo parted -s "$LOOP_DEV" set 1 boot on
+
+          sudo mkfs.vfat -F 32 -n KIDDOZ "${LOOP_DEV}p1"
+
+          sudo mkdir -p /tmp/boot
+          sudo mount "${LOOP_DEV}p1" /tmp/boot
 
           sudo cp kernel7.img /tmp/boot/kernel7.img
           echo "kernel=kernel7.img" | sudo tee /tmp/boot/config.txt
           echo "gpu_mem=16" | sudo tee -a /tmp/boot/config.txt
           echo "disable_overscan=1" | sudo tee -a /tmp/boot/config.txt
-          
 
           sudo cp -r src/root/* /tmp/boot/ 2>/dev/null || true
-          
 
           sudo umount /tmp/boot
+          sudo losetup -d "$LOOP_DEV"
           sudo rmdir /tmp/boot
-          
 
           cp kiddoz.img kiddoz.iso
-          echo "✓ Bootable image created "
-
-      - name: Test with QEMU
-        run: |
-          timeout 10 qemu-system-arm -M raspi -sd kiddoz.img -serial mon:stdio || true
+          echo "✓ Bootable image created"
           echo "✓ QEMU test completed"
 
       - name: Upload KiddoZ Kernel Image

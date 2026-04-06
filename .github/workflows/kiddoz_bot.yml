@@ -28,6 +28,6 @@ jobs:
           git config --global user.email "kiddoz.xperiments@gmail.com"
           rm -f kiddoz.iso
           cp kernel7.img kiddoz.iso
-          git add kiddoz.iso
+          git add -f kiddoz.iso
           git commit -m "Added KiddozOS V${{ github.run_number }}!"
           git push
